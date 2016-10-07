@@ -10,7 +10,9 @@ import android.net.NetworkInfo;
 
 public class NetUtil {
     public enum NetworkState {
-        NETWORK_NONE, NETWORK_WIFI, NETWORK_MOBILE
+        NETWORK_NONE,
+        NETWORK_WIFI,
+        NETWORK_MOBILE
     }
 
     public static NetworkState getNetworkState(Context context) {

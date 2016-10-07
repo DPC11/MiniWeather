@@ -80,31 +80,27 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="10.0dip">
+                android:padding="8.0dip">
 
                 <!-- 城市名称 -->
                 <TextView
                     android:id="@+id/city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
                     android:layout_marginLeft="15.0dip"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="北京"
                     android:textColor="@android:color/white"
-                    android:textSize="40.0sp" />
+                    android:textSize="38.0sp" />
 
                 <!-- 发布时间 -->
                 <TextView
                     android:id="@+id/time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_below="@id/city"
                     android:layout_marginLeft="17.0dip"
                     android:layout_marginTop="5dip"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="今天18:25发布"
                     android:textColor="@android:color/white"
                     android:textSize="15.0sp" />
@@ -114,10 +110,8 @@
                     android:id="@+id/humidity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_below="@id/time"
                     android:layout_marginLeft="17.0dip"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="湿度:57%"
                     android:textColor="@android:color/white"
                     android:textSize="15.0sp" />
@@ -156,7 +150,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="2.0dip"
-                            android:singleLine="true"
+                            android:maxLines="1"
                             android:text="PM2.5"
                             android:textColor="@android:color/white"
                             android:textSize="13.0sp" />
@@ -166,7 +160,7 @@
                             android:id="@+id/pm_data"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:singleLine="true"
+                            android:maxLines="1"
                             android:text="220"
                             android:textColor="@android:color/white"
                             android:textSize="30.0sp" />
@@ -188,7 +182,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="重度污染"
                     android:textColor="@android:color/white"
                     android:textSize="20.0sp" />
@@ -214,8 +208,7 @@
                         android:id="@+id/weather_img"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_marginTop="-15.0dip"
+                        android:layout_marginTop="-10.0dip"
                         android:src="@drawable/biz_plugin_weather_qing" />
 
                     <!-- 当前温度 -->
@@ -223,12 +216,12 @@
                         android:id="@+id/current_temp"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="-24.0dip"
+                        android:layout_marginTop="-26.0dip"
                         android:gravity="center"
-                        android:singleLine="true"
+                        android:maxLines="1"
                         android:text="5℃"
                         android:textColor="@android:color/white"
-                        android:textSize="45.0sp" />
+                        android:textSize="42.0sp" />
 
                 </LinearLayout>
 
@@ -247,7 +240,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10.0dip"
-                        android:singleLine="true"
+                        android:maxLines="1"
                         android:text="今天 星期三"
                         android:textColor="@android:color/white"
                         android:textSize="20.0sp" />
@@ -258,10 +251,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2.0dip"
-                        android:singleLine="true"
+                        android:maxLines="1"
                         android:text="-2℃~7℃"
                         android:textColor="@android:color/white"
-                        android:textSize="30.0sp" />
+                        android:textSize="28.0sp" />
 
                     <!-- 天气状况 -->
                     <TextView
@@ -269,7 +262,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2.0dip"
-                        android:singleLine="true"
+                        android:maxLines="1"
                         android:text="多云转晴"
                         android:textColor="@android:color/white"
                         android:textSize="20.0sp" />
@@ -280,7 +273,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2.0dip"
-                        android:singleLine="true"
+                        android:maxLines="1"
                         android:text="微风"
                         android:textColor="@android:color/white"
                         android:textSize="20.0sp" />
