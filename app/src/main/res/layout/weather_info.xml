@@ -228,7 +228,7 @@
                         android:singleLine="true"
                         android:text="5℃"
                         android:textColor="@android:color/white"
-                        android:textSize="40.0sp" />
+                        android:textSize="45.0sp" />
 
                 </LinearLayout>
 
