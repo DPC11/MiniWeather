@@ -35,7 +35,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private static final int UPDATE_TODAY_WEATHER = 1;
     // HashMap 一一对应天气类型与天气图片资源
     private static final HashMap<String, Integer> weatherRes = new HashMap<>();
-
     static {
         weatherRes.put("晴", R.drawable.biz_plugin_weather_qing);
         weatherRes.put("暴雪", R.drawable.biz_plugin_weather_baoxue);
@@ -86,10 +85,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mUpdateBtn.setOnClickListener(this);
 
         if (NetUtil.getNetworkState(this) != NetUtil.NetworkState.NETWORK_NONE) {
-            Log.d("myWeather", "网络OK");
+            Log.d("MyWeather", "网络OK");
             Toast.makeText(MainActivity.this, "网络OK！", Toast.LENGTH_LONG).show();
         } else {
-            Log.d("myWeather", "网络挂了");
+            Log.d("MyWeather", "网络挂了");
             Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
         }
 
@@ -140,13 +139,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.title_update_btn:
                 SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
                 String cityCode = sharedPreferences.getString("main_city_code", "101010100");
-                Log.d("myWeather", cityCode);
+                Log.d("MyWeather", cityCode);
 
                 if (NetUtil.getNetworkState(this) != NetUtil.NetworkState.NETWORK_NONE) {
-                    Log.d("myWeather", "网络OK");
+                    Log.d("MyWeather", "网络OK");
                     queryWeatherCode(cityCode);
                 } else {
-                    Log.d("myWeather", "网络挂了");
+                    Log.d("MyWeather", "网络挂了");
                     Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
                 }
                 break;
@@ -160,7 +159,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
      */
     private void queryWeatherCode(String cityCode) {
         final String address = "http://wthrcdn.etouch.cn/WeatherApi?citykey=" + cityCode;
-        Log.d("myWeather", address);
+        Log.d("MyWeather", address);
 
         new Thread(new Runnable() {
             @Override
@@ -180,13 +179,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     String str;
                     while ((str = reader.readLine()) != null) {
                         response.append(str);
-                        Log.d("myWeather", str);
+                        Log.d("MyWeather", str);
                     }
                     String responseStr = response.toString();
-                    Log.d("myWeather", responseStr);
+                    Log.d("MyWeather", responseStr);
                     todayWeather = parseXML(responseStr);
                     if (todayWeather != null) {
-                        Log.d("myWeather", todayWeather.toString());
+                        Log.d("MyWeather", todayWeather.toString());
 
                         // 只能在主线程中刷新 UI 控件，所以需要消息机制
                         Message msg = new Message();
@@ -222,7 +221,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             xmlPullParser.setInput(new StringReader(xmldata));
 
             int eventType = xmlPullParser.getEventType();
-            Log.d("myWeather", "parseXML");
+            Log.d("MyWeather", "parseXML");
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 switch (eventType) {
 
@@ -328,13 +327,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             String newCityCode= data.getStringExtra("cityCode");
-            Log.d("myWeather", "选择的城市代码为" + newCityCode);
+            Log.d("MyWeather", "选择的城市代码为" + newCityCode);
 
             if (NetUtil.getNetworkState(this) != NetUtil.NetworkState.NETWORK_NONE) {
-                Log.d("myWeather", "网络OK");
+                Log.d("MyWeather", "网络OK");
                 queryWeatherCode(newCityCode);
             } else {
-                Log.d("myWeather", "网络挂了");
+                Log.d("MyWeather", "网络挂了");
                 Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
             }
         }
