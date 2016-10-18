@@ -63,6 +63,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             temperatureTv, climateTv, windTv, cityNameTv, currentTempTv;
     private ImageView weatherImg, pmImg;
     private ImageView mCitySelect;
+    private String currentCityCode;
 
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
@@ -84,9 +85,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
         mUpdateBtn.setOnClickListener(this);
 
+        SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+        currentCityCode = sharedPreferences.getString("current_city", "101010100");
+        Log.d("MyWeather", currentCityCode);
+
         if (NetUtil.getNetworkState(this) != NetUtil.NetworkState.NETWORK_NONE) {
             Log.d("MyWeather", "网络OK");
-            Toast.makeText(MainActivity.this, "网络OK！", Toast.LENGTH_LONG).show();
+            queryWeatherCode(currentCityCode);
         } else {
             Log.d("MyWeather", "网络挂了");
             Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
@@ -132,18 +137,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
             // 响应选择城市按钮点击
             case R.id.title_city_manager:
                 Intent i = new Intent(this, SelectCity.class);
+                i.putExtra("cityName", cityNameTv.getText());
                 startActivityForResult(i, 1);
                 break;
 
             // 响应选择城市按钮点击
             case R.id.title_update_btn:
-                SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
-                String cityCode = sharedPreferences.getString("main_city_code", "101010100");
-                Log.d("MyWeather", cityCode);
-
                 if (NetUtil.getNetworkState(this) != NetUtil.NetworkState.NETWORK_NONE) {
                     Log.d("MyWeather", "网络OK");
-                    queryWeatherCode(cityCode);
+                    queryWeatherCode(currentCityCode);
                 } else {
                     Log.d("MyWeather", "网络挂了");
                     Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
@@ -297,28 +299,34 @@ public class MainActivity extends Activity implements View.OnClickListener {
         cityTv.setText(todayWeather.getCity());
         timeTv.setText(todayWeather.getUpdatetime() + "发布");
         humidityTv.setText("湿度：" + todayWeather.getShidu());
-        pmDataTv.setText(todayWeather.getPm25());
-        pmQualityTv.setText(todayWeather.getQuality());
         weekTv.setText(todayWeather.getDate());
         temperatureTv.setText(todayWeather.getLow() + "~" + todayWeather.getHigh());
         climateTv.setText(todayWeather.getType());
         windTv.setText("风力：" + todayWeather.getFengli());
         currentTempTv.setText(todayWeather.getWendu() + "℃");
-
         weatherImg.setImageResource(weatherRes.get(todayWeather.getType()));
-        int pm25 = Integer.parseInt(todayWeather.getPm25());
-        if (pm25 <= 50) {
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
-        } else if (pm25 <= 100) {
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_51_100);
-        } else if (pm25 <= 150) {
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
-        } else if (pm25 <= 200) {
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_151_200);
-        } else if (pm25 <= 300) {
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_201_300);
+
+        if (todayWeather.getPm25() != null) {
+            pmDataTv.setText(todayWeather.getPm25());
+            pmQualityTv.setText(todayWeather.getQuality());
+
+            int pm25 = Integer.parseInt(todayWeather.getPm25());
+            if (pm25 <= 50) {
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
+            } else if (pm25 <= 100) {
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_51_100);
+            } else if (pm25 <= 150) {
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
+            } else if (pm25 <= 200) {
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_151_200);
+            } else if (pm25 <= 300) {
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_201_300);
+            } else {
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_greater_300);
+            }
         } else {
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_greater_300);
+            pmDataTv.setText("N/A");
+            pmQualityTv.setText("N/A");
         }
 
         Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_SHORT).show();
@@ -326,12 +334,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            String newCityCode= data.getStringExtra("cityCode");
-            Log.d("MyWeather", "选择的城市代码为" + newCityCode);
+            currentCityCode = data.getStringExtra("cityCode");
+            Log.d("MyWeather", "选择的城市代码为" + currentCityCode);
 
             if (NetUtil.getNetworkState(this) != NetUtil.NetworkState.NETWORK_NONE) {
                 Log.d("MyWeather", "网络OK");
-                queryWeatherCode(newCityCode);
+                queryWeatherCode(currentCityCode);
             } else {
                 Log.d("MyWeather", "网络挂了");
                 Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();

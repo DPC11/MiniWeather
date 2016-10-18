@@ -193,8 +193,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/city_content"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="5.0dip">
+                android:layout_centerInParent="true">
 
                 <!-- 当前气候 -->
                 <LinearLayout
@@ -208,7 +207,7 @@
                         android:id="@+id/weather_img"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="-10.0dip"
+                        android:layout_marginTop="-5.0dip"
                         android:src="@drawable/biz_plugin_weather_qing" />
 
                     <!-- 当前温度 -->
@@ -216,7 +215,7 @@
                         android:id="@+id/current_temp"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="-26.0dip"
+                        android:layout_marginTop="-10.0dip"
                         android:gravity="center"
                         android:maxLines="1"
                         android:text="5℃"
@@ -231,7 +230,8 @@
                     android:layout_toRightOf="@id/current_weather"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5.0dp"
+                    android:layout_marginLeft="6.0dip"
+                    android:layout_alignBottom="@+id/current_weather"
                     android:orientation="vertical">
 
                     <!-- 今日星期 -->
@@ -239,7 +239,6 @@
                         android:id="@+id/week_today"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10.0dip"
                         android:maxLines="1"
                         android:text="今天 星期三"
                         android:textColor="@android:color/white"
@@ -273,6 +272,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2.0dip"
+                        android:layout_marginBottom="6.0dip"
                         android:maxLines="1"
                         android:text="微风"
                         android:textColor="@android:color/white"

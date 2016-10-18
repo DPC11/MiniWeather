@@ -3,18 +3,18 @@
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <RelativeLayout
+        android:id="@+id/title"
         android:layout_width="fill_parent"
         android:layout_height="45.0dip"
-        android:background="#ffcd2626" >
+        android:background="#ffcd2626">
 
         <TextView
             android:id="@+id/title_name"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:gravity="center"
-            android:text="当前城市：北京"
             android:textColor="#ffffffff"
-            android:textSize="20.0dip" />
+            android:textSize="20.0sp" />
 
         <ImageView
             android:id="@+id/title_back"
@@ -34,5 +34,15 @@
             android:gravity="center" />
 
     </RelativeLayout>
+
+    <!-- 城市列表 -->
+    <ListView
+        android:id="@+id/city_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/title"
+        android:background="@drawable/biz_plugin_weather_shenzhen_bg"
+        android:divider="#A71717"
+        android:dividerHeight="1.0dip" />
 
 </RelativeLayout>

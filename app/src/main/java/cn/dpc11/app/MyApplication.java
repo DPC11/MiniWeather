@@ -27,17 +27,17 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "MyApplciation -> onCreate");
+        Log.d(TAG, "MyApplication -> onCreate");
 
         myApplication = this;
         mCityDB = openCityDB();
         initCityList();
     }
 
-    // 单例模式
-    public static MyApplication getInstance() {
-        return myApplication;
-    }
+//    // 单例模式
+//    public static MyApplication getInstance() {
+//        return myApplication;
+//    }
 
     private CityDB openCityDB() {
         String path = "/data"
@@ -83,20 +83,24 @@ public class MyApplication extends Application {
 
     // 如果城市很多那么初始化也需要时间，需要使用多线程
     private void initCityList() {
-        mCityList = new ArrayList<City>();
+        mCityList = new ArrayList<>();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 mCityList = mCityDB.getAllCity();
-                int i = 0;
-                for (City city : mCityList) {
-                    i++;
-                    String cityName = city.getCity();
-                    String cityCode = city.getNumber();
-                    Log.d(TAG, cityCode + " : " + cityName);
-                }
-                Log.d(TAG, "i = " + i);
+//                int i = 0;
+//                for (City city : mCityList) {
+//                    i++;
+//                    String cityName = city.getCity();
+//                    String cityCode = city.getNumber();
+//                    Log.d(TAG, cityCode + " : " + cityName);
+//                }
+//                Log.d(TAG, "i = " + i);
             }
         }).start();
+    }
+
+    public List<City> getmCityList() {
+        return mCityList;
     }
 }
