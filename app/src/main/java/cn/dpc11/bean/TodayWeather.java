@@ -1,10 +1,12 @@
 package cn.dpc11.bean;
 
+import java.io.Serializable;
+
 /**
  * Created by DPC on 2016/10/7.
  */
 
-public class TodayWeather {
+public class TodayWeather implements Serializable {
     private String city;
     private String updatetime;
     private String wendu;

@@ -64,6 +64,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private ImageView weatherImg, pmImg;
     private ImageView mCitySelect;
     private String currentCityCode;
+    private TodayWeather currentWeather;
 
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
@@ -85,22 +86,28 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
         mUpdateBtn.setOnClickListener(this);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
-        currentCityCode = sharedPreferences.getString("current_city", "101010100");
-        Log.d("MyWeather", currentCityCode);
-
-        if (NetUtil.getNetworkState(this) != NetUtil.NetworkState.NETWORK_NONE) {
-            Log.d("MyWeather", "网络OK");
-            queryWeatherCode(currentCityCode);
-        } else {
-            Log.d("MyWeather", "网络挂了");
-            Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
-        }
-
         mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
         mCitySelect.setOnClickListener(this);
 
         initView();
+
+        // 判断是否是新建 Activity 还是从之前状态恢复
+        if (savedInstanceState != null) {
+            currentWeather = (TodayWeather) savedInstanceState.getSerializable("currentWeather");
+            updateTodayWeather(currentWeather);
+        } else {
+            SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+            currentCityCode = sharedPreferences.getString("current_city", "101010100");
+            Log.d("MyWeather", currentCityCode);
+
+            if (NetUtil.getNetworkState(this) != NetUtil.NetworkState.NETWORK_NONE) {
+                Log.d("MyWeather", "网络OK");
+                queryWeatherCode(currentCityCode);
+            } else {
+                Log.d("MyWeather", "网络挂了");
+                Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     void initView() {
@@ -146,6 +153,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 if (NetUtil.getNetworkState(this) != NetUtil.NetworkState.NETWORK_NONE) {
                     Log.d("MyWeather", "网络OK");
                     queryWeatherCode(currentCityCode);
+                    Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_LONG).show();
                 } else {
                     Log.d("MyWeather", "网络挂了");
                     Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
@@ -187,6 +195,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     Log.d("MyWeather", responseStr);
                     todayWeather = parseXML(responseStr);
                     if (todayWeather != null) {
+                        currentWeather = todayWeather;
                         Log.d("MyWeather", todayWeather.toString());
 
                         // 只能在主线程中刷新 UI 控件，所以需要消息机制
@@ -304,7 +313,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         climateTv.setText(todayWeather.getType());
         windTv.setText("风力：" + todayWeather.getFengli());
         currentTempTv.setText(todayWeather.getWendu() + "℃");
-        weatherImg.setImageResource(weatherRes.get(todayWeather.getType()));
+        if (weatherRes.get(todayWeather.getType()) != null) {
+            weatherImg.setImageResource(weatherRes.get(todayWeather.getType()));
+        }
 
         if (todayWeather.getPm25() != null) {
             pmDataTv.setText(todayWeather.getPm25());
@@ -328,8 +339,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
             pmDataTv.setText("N/A");
             pmQualityTv.setText("N/A");
         }
-
-        Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_SHORT).show();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -340,10 +349,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
             if (NetUtil.getNetworkState(this) != NetUtil.NetworkState.NETWORK_NONE) {
                 Log.d("MyWeather", "网络OK");
                 queryWeatherCode(currentCityCode);
+                Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_LONG).show();
             } else {
                 Log.d("MyWeather", "网络挂了");
                 Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        // 在 Activity 可能被摧毁之前保存目前状态
+        outState.putSerializable("currentWeather", currentWeather);
+
+        super.onSaveInstanceState(outState);
     }
 }
