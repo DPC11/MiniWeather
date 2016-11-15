@@ -31,11 +31,6 @@ public class SelectCity extends Activity implements View.OnClickListener {
         public void onItemClick(AdapterView parent, View v, int position, long id) {
             String cityCode = mCityList.get(position).getNumber();
 
-            // 在配置文件中更新城市
-            SharedPreferences.Editor editor = getSharedPreferences("config", MODE_PRIVATE).edit();
-            editor.putString("current_city", cityCode);
-            editor.commit();
-
             Intent i = new Intent();
             i.putExtra("cityCode", cityCode);
             setResult(RESULT_OK, i);
@@ -81,6 +76,4 @@ public class SelectCity extends Activity implements View.OnClickListener {
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(mMessageClickedHandler);
     }
-
-    // 把选择的城市写入配置文件里
 }

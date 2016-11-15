@@ -18,9 +18,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SelectCity">
+        <activity android:name=".SelectCity" />
 
-        </activity>
+        <service android:name="cn.dpc11.service.UpdateService" />
 
     </application>
 

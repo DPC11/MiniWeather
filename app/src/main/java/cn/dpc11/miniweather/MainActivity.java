@@ -1,7 +1,10 @@
 package cn.dpc11.miniweather;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +29,7 @@ import java.net.URL;
 import java.util.HashMap;
 
 import cn.dpc11.bean.TodayWeather;
+import cn.dpc11.service.UpdateService;
 import cn.dpc11.util.NetUtil;
 
 /**
@@ -65,6 +69,22 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private ImageView mCitySelect;
     private String currentCityCode;
     private TodayWeather currentWeather;
+
+    private IntentFilter intentFilter;
+
+    private BroadcastReceiver intentReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (NetUtil.getNetworkState(getBaseContext()) != NetUtil.NetworkState.NETWORK_NONE) {
+                Log.d("MyWeather", "网络OK");
+                queryWeatherCode(currentCityCode);
+                Toast.makeText(MainActivity.this, "自动更新！", Toast.LENGTH_LONG).show();
+            } else {
+                Log.d("MyWeather", "网络挂了");
+                Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
+            }
+        }
+    };
 
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
@@ -108,6 +128,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
             }
         }
+
+        // 启动自动刷新 Service，并接受自动刷新的广播通知
+        startService(new Intent(getBaseContext(), UpdateService.class));
+        intentFilter = new IntentFilter();
+        intentFilter.addAction("Update");
+        registerReceiver(intentReceiver, intentFilter);
     }
 
     void initView() {
@@ -148,7 +174,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 startActivityForResult(i, 1);
                 break;
 
-            // 响应选择城市按钮点击
+            // 响应刷新按钮点击
             case R.id.title_update_btn:
                 if (NetUtil.getNetworkState(this) != NetUtil.NetworkState.NETWORK_NONE) {
                     Log.d("MyWeather", "网络OK");
@@ -189,7 +215,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     String str;
                     while ((str = reader.readLine()) != null) {
                         response.append(str);
-                        Log.d("MyWeather", str);
                     }
                     String responseStr = response.toString();
                     Log.d("MyWeather", responseStr);
@@ -346,6 +371,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
             currentCityCode = data.getStringExtra("cityCode");
             Log.d("MyWeather", "选择的城市代码为" + currentCityCode);
 
+            // 在配置文件中更新城市
+            SharedPreferences.Editor editor = getSharedPreferences("config", MODE_PRIVATE).edit();
+            editor.putString("current_city", currentCityCode);
+            editor.commit();
+
             if (NetUtil.getNetworkState(this) != NetUtil.NetworkState.NETWORK_NONE) {
                 Log.d("MyWeather", "网络OK");
                 queryWeatherCode(currentCityCode);
@@ -363,5 +393,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
         outState.putSerializable("currentWeather", currentWeather);
 
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        unregisterReceiver(intentReceiver);
     }
 }
