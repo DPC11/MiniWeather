@@ -11,6 +11,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -78,7 +81,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
             if (NetUtil.getNetworkState(getBaseContext()) != NetUtil.NetworkState.NETWORK_NONE) {
                 Log.d("MyWeather", "网络OK");
                 queryWeatherCode(currentCityCode);
-                Toast.makeText(MainActivity.this, "自动更新！", Toast.LENGTH_LONG).show();
             } else {
                 Log.d("MyWeather", "网络挂了");
                 Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
@@ -91,6 +93,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
             switch (msg.what) {
                 case UPDATE_TODAY_WEATHER:
                     updateTodayWeather((TodayWeather) msg.obj);
+                    Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_LONG).show();
+
+                    mUpdateBtn.setAnimation(null);
+                    mUpdateBtn.setEnabled(true);
                     break;
                 default:
                     break;
@@ -176,10 +182,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
             // 响应刷新按钮点击
             case R.id.title_update_btn:
+                RotateAnimation rotate = new RotateAnimation(0.0f, 360.0f,
+                    Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                rotate.setInterpolator(new LinearInterpolator());
+                rotate.setRepeatCount(Animation.INFINITE);
+                rotate.setDuration(400);
+
+                mUpdateBtn.setEnabled(false);
+                mUpdateBtn.startAnimation(rotate);
+
                 if (NetUtil.getNetworkState(this) != NetUtil.NetworkState.NETWORK_NONE) {
                     Log.d("MyWeather", "网络OK");
                     queryWeatherCode(currentCityCode);
-                    Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_LONG).show();
                 } else {
                     Log.d("MyWeather", "网络挂了");
                     Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
@@ -396,9 +410,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
 
+        stopService(new Intent(getBaseContext(), UpdateService.class));
         unregisterReceiver(intentReceiver);
     }
 }
