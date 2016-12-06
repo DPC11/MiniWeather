@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1">
+    <!-- 明天日期 -->
+    <TextView
+        android:id="@+id/tomorrow_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="25日星期四"
+        android:textColor="#ffffffff"
+        android:textSize="16sp" />
+
+    <!-- 明天天气 -->
+    <ImageView
+        android:id="@+id/weather_img"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:layout_gravity="center"
+        android:src="@drawable/biz_plugin_weather_qing" />
+
+    <!-- 明天气温 -->
+    <TextView
+        android:id="@+id/tomorrow_temp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="22℃~26℃"
+        android:textColor="#ffffffff"
+        android:textSize="16sp" />
+
+    <!-- 明天天气 -->
+    <TextView
+        android:id="@+id/tomorrow_weather"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="晴"
+        android:textColor="#ffffffff"
+        android:textSize="16sp" />
+
+    <!-- 明天风向 -->
+    <TextView
+        android:id="@+id/tomorrow_wind"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="无持续风向"
+        android:textColor="#ffffffff"
+        android:textSize="16sp" />
+
+</LinearLayout>
