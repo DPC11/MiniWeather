@@ -41,7 +41,7 @@
     <EditText android:id="@+id/search_edit"
         android:layout_width="fill_parent"
         android:layout_height="45.0dip"
-        android:hint="搜索全国城市(中文)"
+        android:hint="搜索全国城市(中文或拼音)"
         android:layout_margin="10.0dip"
         android:drawableLeft="@drawable/magnifying_glass"
         android:drawablePadding="8.0dip"
@@ -53,7 +53,9 @@
         android:background="@drawable/contact_search_box_edittext_keyword_background"
         android:textColor="#ff000000"
         android:textColorHint="#ffcccccc"
-        android:textSize="15.0sp" />
+        android:textSize="15.0sp"
+        android:inputType="text"
+        android:imeOptions="actionDone" />
 
     <!-- 城市列表 -->
     <ListView

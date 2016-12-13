@@ -19,7 +19,6 @@
         </activity>
 
         <activity android:name=".SelectCity" />
-
         <service android:name="cn.dpc11.service.UpdateService" /><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data

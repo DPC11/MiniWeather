@@ -9,14 +9,13 @@ public class City {
     private String city;
     private String number;
     private String firstPY;
+    private String allPY;
+    private String allFirstPY;
 
     @Override
     public String toString() {
-        return province + "" + city;
+        return province + " - " + city + " " + allPY;
     }
-
-    private String allPY;
-    private String allFirstPY;
 
     public City(String province, String city, String number, String
             firstPY, String allPY, String allFirstPY) {

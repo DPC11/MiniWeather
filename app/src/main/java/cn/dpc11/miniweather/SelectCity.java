@@ -3,9 +3,12 @@ package cn.dpc11.miniweather;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,12 +26,16 @@ import cn.dpc11.bean.City;
 public class SelectCity extends Activity implements View.OnClickListener {
     private ImageView mBackBtn;
     private TextView cityNameTv;
+    private EditText mEditText;
+
+    private ListView mListView;
     private List<City> mCityList;
+    private ArrayAdapter<City> mAdapter;
 
     private AdapterView.OnItemClickListener mMessageClickedHandler =
             new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView parent, View v, int position, long id) {
-            String cityCode = mCityList.get(position).getNumber();
+            String cityCode = ((City) parent.getItemAtPosition(position)).getNumber();
 
             Intent i = new Intent();
             i.putExtra("cityCode", cityCode);
@@ -36,6 +43,23 @@ public class SelectCity extends Activity implements View.OnClickListener {
             finish();
         }
     };
+
+    TextWatcher mTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String cs = mEditText.getText().toString().toUpperCase();
+            mAdapter.getFilter().filter(cs);
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +75,9 @@ public class SelectCity extends Activity implements View.OnClickListener {
 
         mBackBtn = (ImageView) findViewById(R.id.title_back);
         mBackBtn.setOnClickListener(this);
+
+        mEditText = (EditText) findViewById(R.id.search_edit);
+        mEditText.addTextChangedListener(mTextWatcher);
     }
 
     @Override
@@ -65,14 +92,9 @@ public class SelectCity extends Activity implements View.OnClickListener {
     }
 
     private void setCityListView() {
-        ListView listView = (ListView) findViewById(R.id.city_list);
-
-        List<String> cityList = new ArrayList<>();
-        for (City city : mCityList) {
-            cityList.add(city.toString());
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.list_item, cityList);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(mMessageClickedHandler);
+        mListView = (ListView) findViewById(R.id.city_list);
+        mAdapter = new ArrayAdapter<>(this, R.layout.list_item, mCityList);
+        mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(mMessageClickedHandler);
     }
 }
