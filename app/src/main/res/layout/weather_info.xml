@@ -39,9 +39,8 @@
         <!-- 六日天气信息 -->
         <android.support.v4.view.ViewPager
             android:layout_width="match_parent"
-            android:layout_height="116dp"
-            android:id="@+id/view_pager"
-            android:layout_weight="1.01" />
+            android:layout_height="140dip"
+            android:id="@+id/view_pager" />
 
         <LinearLayout
             android:layout_width="match_parent"

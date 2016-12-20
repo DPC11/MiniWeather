@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -60,6 +63,20 @@ public class SelectCity extends Activity implements View.OnClickListener {
         }
     };
 
+    OnScrollListener scrollListener = new OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+            if (scrollState != 0) {
+                InputMethodManager imm = (InputMethodManager)
+                        getSystemService(Activity.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
+            }
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +88,12 @@ public class SelectCity extends Activity implements View.OnClickListener {
 
         MyApplication myApplication = (MyApplication) getApplication();
         mCityList = myApplication.getmCityList();
-        setCityListView();
+
+        mListView = (ListView) findViewById(R.id.city_list);
+        mAdapter = new ArrayAdapter<>(this, R.layout.list_item, mCityList);
+        mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(mMessageClickedHandler);
+        mListView.setOnScrollListener(scrollListener);
 
         mBackBtn = (ImageView) findViewById(R.id.title_back);
         mBackBtn.setOnClickListener(this);
@@ -89,12 +111,5 @@ public class SelectCity extends Activity implements View.OnClickListener {
             default:
                 break;
         }
-    }
-
-    private void setCityListView() {
-        mListView = (ListView) findViewById(R.id.city_list);
-        mAdapter = new ArrayAdapter<>(this, R.layout.list_item, mCityList);
-        mListView.setAdapter(mAdapter);
-        mListView.setOnItemClickListener(mMessageClickedHandler);
     }
 }

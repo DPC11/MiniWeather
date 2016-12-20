@@ -37,10 +37,18 @@ import java.util.HashMap;
 import java.util.List;
 
 import cn.dpc11.adapter.ViewPagerAdapter;
+import cn.dpc11.app.MyApplication;
+import cn.dpc11.bean.City;
 import cn.dpc11.bean.FutureWeather;
 import cn.dpc11.bean.TodayWeather;
 import cn.dpc11.service.UpdateService;
 import cn.dpc11.util.NetUtil;
+
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.location.Poi;
 
 /**
  * Created by DPC on 16/9/20.
@@ -73,11 +81,10 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         weatherRes.put("中雨", R.drawable.biz_plugin_weather_zhongyu);
     }
 
-    private ImageView mUpdateBtn;
+    private ImageView mCitySelect, mLocataBtn, mUpdateBtn;
     private TextView cityTv, timeTv, humidityTv, weekTv, pmDataTv, pmQualityTv,
             temperatureTv, climateTv, windTv, cityNameTv, currentTempTv;
     private ImageView weatherImg, pmImg;
-    private ImageView mCitySelect;
     private String currentCityCode;
     private TodayWeather currentWeather;
 
@@ -90,6 +97,8 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
     private ImageView[] dots;
     private int[] ids = {R.id.iv1, R.id.iv2};
+
+    private List<City> mCityList;
 
     private BroadcastReceiver intentReceiver = new BroadcastReceiver() {
         @Override
@@ -108,8 +117,22 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_TODAY_WEATHER:
-                    updateTodayWeather((TodayWeather) msg.obj);
-                    Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_LONG).show();
+                    TodayWeather todayWeather = (TodayWeather) msg.obj;
+
+                    if (todayWeather.getWendu() == null) {
+                        Toast.makeText(MainActivity.this, "该地区目前没有天气信息！", Toast.LENGTH_LONG).show();
+                        SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+                        currentCityCode = sharedPreferences.getString("current_city", "101010100");
+                    } else {
+                        currentWeather = todayWeather;
+                        updateTodayWeather(todayWeather);
+                        Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_LONG).show();
+
+                        // 在配置文件中更新城市
+                        SharedPreferences.Editor editor = getSharedPreferences("config", MODE_PRIVATE).edit();
+                        editor.putString("current_city", currentCityCode);
+                        editor.commit();
+                    }
 
                     mUpdateBtn.setAnimation(null);
                     mUpdateBtn.setEnabled(true);
@@ -120,16 +143,37 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         }
     };
 
+    public LocationClient mLocationClient = null;
+    public BDLocationListener mLocationListener = new BDLocationListener() {
+        @Override
+        public void onReceiveLocation(BDLocation bdLocation) {
+            String location = bdLocation.getDistrict();
+            Log.d("百度地图", "定位到" + location);
+            for (City city : mCityList) {
+                if (location.contains(city.getCity())) {
+                    Toast.makeText(MainActivity.this, "定位成功！", Toast.LENGTH_LONG).show();
+                    currentCityCode = city.getNumber();
+                    queryWeatherCode(currentCityCode);
+                }
+            }
+            mLocationClient.stop();
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.weather_info);
 
-        mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
-        mUpdateBtn.setOnClickListener(this);
-
         mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
         mCitySelect.setOnClickListener(this);
+
+        mLocataBtn = (ImageView) findViewById(R.id.title_location);
+        mLocataBtn.setOnClickListener(this);
+
+        mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
+        mUpdateBtn.setOnClickListener(this);
 
         initView();
 
@@ -157,6 +201,14 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         intentFilter = new IntentFilter();
         intentFilter.addAction("Update");
         registerReceiver(intentReceiver, intentFilter);
+
+        // 启动百度定位服务
+        mLocationClient = new LocationClient(getApplicationContext());
+        mLocationClient.registerLocationListener(mLocationListener);
+        initLocation();
+
+        // 获取城市列表用于的定位城市并获取城市代码
+        mCityList = ((MyApplication) getApplication()).getmCityList();
     }
 
     void initView() {
@@ -216,6 +268,23 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         }
     }
 
+    void initLocation(){
+        LocationClientOption option = new LocationClientOption();
+        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);   // 可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
+        option.setCoorType("bd09ll");// 可选，默认gcj02，设置返回的定位结果坐标系
+        int span=1000;
+        option.setScanSpan(span);   // 可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
+        option.setIsNeedAddress(true);   // 可选，设置是否需要地址信息，默认不需要
+        option.setOpenGps(true);   // 可选，默认false,设置是否使用gps
+        option.setLocationNotify(true);   // 可选，默认false，设置是否当GPS有效时按照1S/1次频率输出GPS结果
+        option.setIsNeedLocationDescribe(true);   // 可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
+        option.setIsNeedLocationPoiList(true);   // 可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
+        option.setIgnoreKillProcess(false);   // 可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
+        option.SetIgnoreCacheException(false);   // 可选，默认false，设置是否收集CRASH信息，默认收集
+        option.setEnableSimulateGps(false);   // 可选，默认false，设置是否需要过滤GPS仿真结果，默认需要
+        mLocationClient.setLocOption(option);
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -225,6 +294,11 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                 Intent i = new Intent(this, SelectCity.class);
                 i.putExtra("cityName", cityNameTv.getText());
                 startActivityForResult(i, 1);
+                break;
+
+            // 响应定位按钮点击
+            case R.id.title_location:
+                mLocationClient.start();
                 break;
 
             // 响应刷新按钮点击
@@ -277,16 +351,13 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                     String responseStr = response.toString();
                     Log.d("MyWeather", responseStr);
                     todayWeather = parseXML(responseStr);
-                    if (todayWeather != null) {
-                        currentWeather = todayWeather;
-                        Log.d("MyWeather", todayWeather.toString());
+                    Log.d("MyWeather", todayWeather.toString());
 
-                        // 只能在主线程中刷新 UI 控件，所以需要消息机制
-                        Message msg = new Message();
-                        msg.what = UPDATE_TODAY_WEATHER;
-                        msg.obj = todayWeather;
-                        mHandler.sendMessage(msg);
-                    }
+                    // 只能在主线程中刷新 UI 控件，所以需要消息机制
+                    Message msg = new Message();
+                    msg.what = UPDATE_TODAY_WEATHER;
+                    msg.obj = todayWeather;
+                    mHandler.sendMessage(msg);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -299,7 +370,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     }
 
     private TodayWeather parseXML(String xmldata) {
-        TodayWeather todayWeather = null;
+        TodayWeather todayWeather = new TodayWeather();
         int fengxiangCount = 0;
         int fengliCount = 0;
         int dateCount = 0;
@@ -328,7 +399,6 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                     case XmlPullParser.START_TAG:
                         if (xmlPullParser.getName().equals("city")) {
                             xmlPullParser.next();
-                            todayWeather = new TodayWeather();
                             todayWeather.setCity(xmlPullParser.getText());
 
                         } else if (xmlPullParser.getName().equals("updatetime")) {
@@ -494,15 +564,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
             currentCityCode = data.getStringExtra("cityCode");
             Log.d("MyWeather", "选择的城市代码为" + currentCityCode);
 
-            // 在配置文件中更新城市
-            SharedPreferences.Editor editor = getSharedPreferences("config", MODE_PRIVATE).edit();
-            editor.putString("current_city", currentCityCode);
-            editor.commit();
-
             if (NetUtil.getNetworkState(this) != NetUtil.NetworkState.NETWORK_NONE) {
                 Log.d("MyWeather", "网络OK");
                 queryWeatherCode(currentCityCode);
-                Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_LONG).show();
             } else {
                 Log.d("MyWeather", "网络挂了");
                 Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
@@ -520,12 +584,15 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-
         stopService(new Intent(getBaseContext(), UpdateService.class));
         unregisterReceiver(intentReceiver);
+
+        mLocationClient.unRegisterLocationListener(mLocationListener);
+        mLocationClient.stop();
+
+        super.onDestroy();
     }
-    
+
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

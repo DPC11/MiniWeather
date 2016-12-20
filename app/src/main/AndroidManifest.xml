@@ -1,8 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cn.dpc11.miniweather">
+    package="cn.dpc11.miniweather"
+    android:versionCode="2"
+    android:versionName="2.3.3.3">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-sdk android:minSdkVersion="13" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- 百度定位所需权限 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
 
     <application android:name="cn.dpc11.app.MyApplication"
         android:allowBackup="true"
@@ -10,6 +22,12 @@
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="XPfq1GtsMRn2t0je9TyazUqYXhfeTej6" />
+
+        <service android:name="com.baidu.location.f" android:enabled="true" android:process=":remote" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -19,12 +37,7 @@
         </activity>
 
         <activity android:name=".SelectCity" />
-        <service android:name="cn.dpc11.service.UpdateService" /><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
+        <service android:name="cn.dpc11.service.UpdateService" />
     </application>
 
 </manifest>

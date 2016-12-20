@@ -1,27 +1,47 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'MiniWeatherKey'
+            keyPassword '8433696Dpc'
+            storeFile file('/Users/DPC/Documents/安卓应用开发/MiniWeatherKey.jks')
+            storePassword '8433696Dpc'
+        }
+    }
     compileSdkVersion 23
     buildToolsVersion '25.0.1'
-
     defaultConfig {
         applicationId "cn.dpc11.miniweather"
-        minSdkVersion 15
+        minSdkVersion 13
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName '2.3.3.3'
+        signingConfig signingConfigs.config
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+        }
+        debug {
+            signingConfig signingConfigs.config
+        }
+    }
+    productFlavors {
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
         }
     }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
+    compile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }
