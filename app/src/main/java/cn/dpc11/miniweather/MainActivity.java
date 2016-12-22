@@ -134,7 +134,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                         editor.commit();
                     }
 
-                    mUpdateBtn.setAnimation(null);
+                    //mUpdateBtn.setAnimation(null);
                     mUpdateBtn.setEnabled(true);
                     break;
                 default:
@@ -149,11 +149,14 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         public void onReceiveLocation(BDLocation bdLocation) {
             String location = bdLocation.getDistrict();
             Log.d("百度地图", "定位到" + location);
-            for (City city : mCityList) {
-                if (location.contains(city.getCity())) {
-                    Toast.makeText(MainActivity.this, "定位成功！", Toast.LENGTH_LONG).show();
-                    currentCityCode = city.getNumber();
-                    queryWeatherCode(currentCityCode);
+            if (location != null) {
+                for (City city : mCityList) {
+                    if (location.contains(city.getCity())) {
+                        Toast.makeText(MainActivity.this, "定位成功！", Toast.LENGTH_LONG).show();
+                        currentCityCode = city.getNumber();
+                        queryWeatherCode(currentCityCode);
+                        break;
+                    }
                 }
             }
             mLocationClient.stop();
@@ -306,7 +309,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                 RotateAnimation rotate = new RotateAnimation(0.0f, 360.0f,
                         Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                 rotate.setInterpolator(new LinearInterpolator());
-                rotate.setRepeatCount(Animation.INFINITE);
+                rotate.setRepeatCount(0);
                 rotate.setDuration(400);
 
                 mUpdateBtn.setEnabled(false);

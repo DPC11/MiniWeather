@@ -12,7 +12,7 @@ import java.util.TimerTask;
  */
 
 public class UpdateService extends IntentService {
-    static final int UPDATE_INTERVAL = 600 * 1000;
+    static final int UPDATE_INTERVAL = 60 * 1000;
     private Timer timer = new Timer();
 
     public UpdateService() {

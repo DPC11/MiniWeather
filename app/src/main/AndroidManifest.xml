@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cn.dpc11.miniweather"
     android:versionCode="2"
-    android:versionName="2.3.3.3">
+    android:versionName="2.333">
 
     <uses-sdk android:minSdkVersion="13" />
     <uses-permission android:name="android.permission.INTERNET" />
